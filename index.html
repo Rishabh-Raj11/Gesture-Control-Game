@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Dodger - Gesture Game</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <video id="input_video" style="display: none;"></video>
+
+        <div class="game-wrapper">
+            <canvas id="output_canvas" width="1000" height="700" class="layer skeleton-layer"></canvas>
+            <canvas id="game_canvas" width="1000" height="700" class="layer game-layer"></canvas>
+            
+            <div id="ui_overlay" class="layer ui-layer">
+                <!-- HUD -->
+                <div id="hud" class="header" style="display: none;">
+                    <div class="score-container">SCORE: <span id="score">0</span></div>
+                    <div class="health-container">INTEGRITY: <span id="health">100</span>%</div>
+                    <!-- Pause Hint -->
+                    <div class="pause-hint" style="font-size: 0.9rem; margin-top: 5px; color: #b000ff;">
+                        3 Fingers = Pause
+                    </div>
+                </div>
+                
+                <div id="gesture_status" class="status-badge">Wait for Camera...</div>
+                <div id="loading_status" class="glass-panel centered-panel">
+                    <h2>INITIATING NEURAL LINK...</h2>
+                    <p>Please authorize optical sensor (webcam) access.</p>
+                </div>
+
+                <!-- MAIN MENU -->
+                <div id="main_menu" class="glass-panel centered-panel" style="display: none;">
+                    <h1 class="glitch" data-text="SPACE DODGER">SPACE DODGER</h1>
+                    <p class="subtitle">Next-Gen Gestural Combat</p>
+                    <div class="instructions" style="margin-bottom: 20px;">
+                        <p>✋ <strong>Open Palm</strong> <span class="action-desc">Force Shield</span></p>
+                        <p>✊ <strong>Fist</strong> <span class="action-desc">Plasma Cannons</span></p>
+                        <p>✌️ <strong>Two Fingers</strong> <span class="action-desc">Spread Shot</span></p>
+                    </div>
+                    <button class="cyber-btn" id="btn_play">START GAME (✋)</button>
+                    <button class="cyber-btn" id="btn_settings">SETTINGS</button>
+                </div>
+
+                <!-- SETTINGS -->
+                <div id="settings_menu" class="glass-panel centered-panel" style="display: none;">
+                    <h2>SYSTEM CALIBRATION</h2>
+                    <div class="setting-item">
+                        <label>Tracking Sensitivity: <span id="sens_val">1.0</span>x</label>
+                        <input type="range" id="sens_slider" min="0.5" max="3.0" step="0.1" value="1.0">
+                        <p style="font-size: 0.9rem; color: #a0a0b0; margin-top: 15px;">
+                            Higher sensitivity requires less physical hand movement to reach screen boundaries.
+                        </p>
+                    </div>
+                    <button class="cyber-btn" id="btn_settings_back">BACK</button>
+                </div>
+
+                <!-- PAUSE MENU -->
+                <div id="pause_menu" class="glass-panel centered-panel" style="display: none;">
+                    <h2>SYSTEM PAUSED</h2>
+                    <button class="cyber-btn" id="btn_resume">RESUME (✋)</button>
+                    <button class="cyber-btn" id="btn_quit_pause">ABORT TO MENU</button>
+                </div>
+
+                <!-- GAME OVER -->
+                <div id="game_over" class="glass-panel centered-panel" style="display: none;">
+                    <h2>HULL BREACH DETECTED</h2>
+                    <p style="font-size: 2rem; margin: 20px 0; color: #00e5ff;">Final Score: <span id="final_score" style="font-weight: 900;">0</span></p>
+                    <button class="cyber-btn" id="btn_restart">REBOOT (✋)</button>
+                    <button class="cyber-btn" id="btn_quit_over">MAIN MENU</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/gesture.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
