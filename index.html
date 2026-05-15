@@ -48,6 +48,7 @@
                         <p>✌️ <strong>Two Fingers</strong> <span class="action-desc">Spread Shot</span></p>
                     </div>
                     <button class="cyber-btn" id="btn_play">START GAME (✋)</button>
+                    <button class="cyber-btn" id="btn_leaderboard_menu">LEADERBOARD</button>
                     <button class="cyber-btn" id="btn_settings">SETTINGS</button>
                 </div>
 
@@ -64,6 +65,26 @@
                     <button class="cyber-btn" id="btn_settings_back">BACK</button>
                 </div>
 
+                <!-- LEADERBOARD -->
+                <div id="leaderboard_menu" class="glass-panel centered-panel" style="display: none;">
+                    <h2>TOP OPERATIVES</h2>
+                    <div class="leaderboard-container">
+                        <table class="leaderboard-table" id="leaderboard_table">
+                            <thead>
+                                <tr>
+                                    <th>RANK</th>
+                                    <th>NAME</th>
+                                    <th>SCORE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data injected via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <button class="cyber-btn" id="btn_leaderboard_back">BACK</button>
+                </div>
+
                 <!-- PAUSE MENU -->
                 <div id="pause_menu" class="glass-panel centered-panel" style="display: none;">
                     <h2>SYSTEM PAUSED</h2>
@@ -75,7 +96,14 @@
                 <div id="game_over" class="glass-panel centered-panel" style="display: none;">
                     <h2>HULL BREACH DETECTED</h2>
                     <p style="font-size: 2rem; margin: 20px 0; color: #00e5ff;">Final Score: <span id="final_score" style="font-weight: 900;">0</span></p>
+                    
+                    <div id="score_submission_box" style="margin-bottom: 20px;">
+                        <input type="text" id="player_name" class="cyber-input" placeholder="ENTER CALLSIGN..." maxlength="12">
+                        <button class="cyber-btn" id="btn_submit_score" style="font-size: 1rem; padding: 10px;">SUBMIT RECORD</button>
+                    </div>
+
                     <button class="cyber-btn" id="btn_restart">REBOOT (✋)</button>
+                    <button class="cyber-btn" id="btn_leaderboard_over">LEADERBOARD</button>
                     <button class="cyber-btn" id="btn_quit_over">MAIN MENU</button>
                 </div>
             </div>

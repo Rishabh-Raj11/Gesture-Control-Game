@@ -40,6 +40,7 @@ class Game {
 
     bindEvents() {
         document.getElementById('btn_play').onclick = () => this.start();
+        document.getElementById('btn_leaderboard_menu').onclick = () => this.fetchLeaderboard();
         document.getElementById('btn_settings').onclick = () => this.setState('SETTINGS');
         const sensSlider = document.getElementById('sens_slider');
         sensSlider.oninput = (e) => {
@@ -47,10 +48,13 @@ class Game {
             document.getElementById('sens_val').innerText = this.sensitivity.toFixed(1);
         };
         document.getElementById('btn_settings_back').onclick = () => this.setState('MENU');
+        document.getElementById('btn_leaderboard_back').onclick = () => this.setState('MENU');
+        document.getElementById('btn_submit_score').onclick = () => this.submitScore();
         document.getElementById('btn_resume').onclick = () => this.resume();
         document.getElementById('btn_quit_pause').onclick = () => this.quitToMenu();
         document.getElementById('btn_restart').onclick = () => this.start();
         document.getElementById('btn_quit_over').onclick = () => this.quitToMenu();
+        document.getElementById('btn_leaderboard_over').onclick = () => this.fetchLeaderboard();
     }
 
     createStars() {
@@ -69,11 +73,12 @@ class Game {
 
     setState(newState) {
         this.state = newState;
-        const els = ['loading_status', 'main_menu', 'settings_menu', 'pause_menu', 'game_over', 'hud'];
+        const els = ['loading_status', 'main_menu', 'settings_menu', 'pause_menu', 'game_over', 'hud', 'leaderboard_menu'];
         els.forEach(id => document.getElementById(id).style.display = 'none');
         if(newState==='LOADING') document.getElementById('loading_status').style.display='block';
         if(newState==='MENU') document.getElementById('main_menu').style.display='block';
         if(newState==='SETTINGS') document.getElementById('settings_menu').style.display='block';
+        if(newState==='LEADERBOARD') document.getElementById('leaderboard_menu').style.display='block';
         if(newState==='PLAYING') document.getElementById('hud').style.display='flex';
         if(newState==='PAUSED') document.getElementById('pause_menu').style.display='block';
         if(newState==='GAME_OVER') document.getElementById('game_over').style.display='block';
@@ -514,5 +519,74 @@ class Game {
     gameOver() {
         this.setState('GAME_OVER');
         document.getElementById('final_score').innerText = this.score;
+        document.getElementById('player_name').value = '';
+        document.getElementById('btn_submit_score').style.display = 'block';
+        document.getElementById('btn_submit_score').innerText = 'SUBMIT RECORD';
+    }
+
+    async fetchLeaderboard() {
+        this.setState('LEADERBOARD');
+        const tbody = document.querySelector('#leaderboard_table tbody');
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align: center;">LOADING DATA...</td></tr>';
+        
+        try {
+            const response = await fetch('http://localhost:3000/api/leaderboard');
+            if (!response.ok) throw new Error('API Error');
+            const data = await response.json();
+            
+            tbody.innerHTML = '';
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center;">NO RECORDS FOUND.</td></tr>';
+                return;
+            }
+
+            data.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>#${index + 1}</td>
+                    <td>${row.name}</td>
+                    <td>${row.score}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } catch (err) {
+            console.error(err);
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--accent-secondary);">API CONNECTION FAILED.</td></tr>';
+        }
+    }
+
+    async submitScore() {
+        const nameInput = document.getElementById('player_name');
+        const name = nameInput.value.trim();
+        
+        if (!name) {
+            alert('PLEASE ENTER A VALID CALLSIGN.');
+            return;
+        }
+        
+        const btn = document.getElementById('btn_submit_score');
+        btn.innerText = 'SUBMITTING...';
+        btn.style.pointerEvents = 'none';
+
+        try {
+            const response = await fetch('http://localhost:3000/api/leaderboard', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name, score: this.score })
+            });
+            
+            if (!response.ok) throw new Error('Failed to submit score');
+            
+            btn.innerText = 'DATA UPLOADED';
+            btn.style.display = 'none'; // Hide submit button so they can't spam it
+            this.fetchLeaderboard();
+        } catch (err) {
+            console.error(err);
+            alert('UPLOAD FAILED! CHECK CONNECTION.');
+            btn.innerText = 'SUBMIT RECORD';
+        } finally {
+            btn.style.pointerEvents = 'auto';
+        }
     }
 }
